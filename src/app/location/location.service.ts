@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { SaveLocationDto } from './dto/save-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { LocationEntity } from './location.entity';
@@ -16,22 +16,22 @@ export class LocationService {
     private readonly locationRepository: Repository<LocationEntity>,
   ) {}
 
-  async findAll() {
+  async findAll(companyId: string) {
     try {
       return await this.locationRepository.find({
-        relations: ['user', 'location'],
+        where: {
+          companyId,
+        },
+        relations: ['company'],
       });
     } catch (error) {
       throw new NotFoundException(error.message);
     }
   }
 
-  async findOne(id: string) {
+  async findOne(options: FindOneOptions<LocationEntity>) {
     try {
-      return await this.locationRepository.findOneOrFail({
-        where: { id },
-        relations: ['user', 'location'],
-      });
+      return await this.locationRepository.findOneOrFail(options);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -53,7 +53,9 @@ export class LocationService {
 
   async update(id: string, data: UpdateLocationDto): Promise<LocationEntity> {
     try {
-      const location = await this.findOne(id);
+      const location = await this.findOne({
+        where: { id },
+      });
 
       const updatedLocation = await this.locationRepository.merge(
         location,
@@ -68,7 +70,9 @@ export class LocationService {
   }
 
   async deleteById(id: string) {
-    await this.findOne(id);
+    await this.findOne({
+      where: { id },
+    });
     await this.locationRepository.softDelete(id);
   }
 }

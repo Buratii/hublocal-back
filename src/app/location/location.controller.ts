@@ -16,19 +16,21 @@ import { SaveLocationDto } from './dto/save-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { LocationService } from './location.service';
 
-@Controller('api/location')
+@Controller('location')
 @UseGuards(AuthGuard('jwt'))
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
   @Get()
-  async findAll() {
-    return await this.locationService.findAll();
+  async findAllByCompany(@Param('id', new ParseUUIDPipe()) companyId: string) {
+    return await this.locationService.findAll(companyId);
   }
 
   @Get(':id')
   async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    return await this.locationService.findOne(id);
+    return await this.locationService.findOne({
+      where: { id },
+    });
   }
 
   @Post()
