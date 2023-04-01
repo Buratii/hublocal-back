@@ -14,7 +14,7 @@ export class SaveCompanyDto {
 
   @IsNotEmpty()
   @Matches(RegExHelper.cnpj, {
-    message: MessagesHelper.VALIDATE_PASSWORD,
+    message: MessagesHelper.INVALID_PASSWORD,
   })
   cnpj: string;
 }

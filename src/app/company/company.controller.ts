@@ -16,19 +16,21 @@ import { CompanyService } from './company.service';
 import { SaveCompanyDto } from './dto/save-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
-@Controller('api/company')
+@Controller('company')
 @UseGuards(AuthGuard('jwt'))
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Get()
-  async findAll() {
-    return await this.companyService.findAll();
+  async findAllByUserId(@Param('id', new ParseUUIDPipe()) userId: string) {
+    return await this.companyService.findAll(userId);
   }
 
   @Get(':id')
   async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    return await this.companyService.findOne(id);
+    return await this.companyService.findOne({
+      where: { id },
+    });
   }
 
   @Post()

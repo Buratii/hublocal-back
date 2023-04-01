@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { CompanyEntity } from './company.entity';
 import { SaveCompanyDto } from './dto/save-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -16,9 +16,12 @@ export class CompanyService {
     private readonly companyRepository: Repository<CompanyEntity>,
   ) {}
 
-  async findAll() {
+  async findAll(userId: string) {
     try {
       return await this.companyRepository.find({
+        where: {
+          userId,
+        },
         relations: ['user', 'location'],
       });
     } catch (error) {
@@ -26,19 +29,16 @@ export class CompanyService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(options: FindOneOptions<CompanyEntity>) {
     try {
-      return await this.companyRepository.findOneOrFail({
-        where: { id },
-        relations: ['user', 'location'],
-      });
+      return await this.companyRepository.findOneOrFail(options);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
   }
 
   async save(data: SaveCompanyDto): Promise<CompanyEntity> {
-    const findCompany = await this.companyRepository.findOne({
+    const findCompany = await this.findOne({
       where: {
         cnpj: data.cnpj,
       },
@@ -55,7 +55,9 @@ export class CompanyService {
 
   async update(id: string, data: UpdateCompanyDto): Promise<CompanyEntity> {
     try {
-      const company = await this.findOne(id);
+      const company = await this.findOne({
+        where: { id },
+      });
 
       const updatedCompany = await this.companyRepository.merge(company, data);
 
@@ -67,7 +69,9 @@ export class CompanyService {
   }
 
   async deleteById(id: string) {
-    await this.findOne(id);
+    await this.findOne({
+      where: { id },
+    });
     await this.companyRepository.softDelete(id);
   }
 }
