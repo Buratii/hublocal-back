@@ -1,4 +1,6 @@
-import { IsNotEmpty } from 'class-validator';
+import { MessagesHelper } from '@helpers/messages.helper';
+import { RegExHelper } from '@helpers/regex.helper';
+import { IsNotEmpty, Matches } from 'class-validator';
 
 export class SaveLocationDto {
   @IsNotEmpty()
@@ -8,10 +10,16 @@ export class SaveLocationDto {
   street: string;
 
   @IsNotEmpty()
+  @Matches(RegExHelper.cep, {
+    message: MessagesHelper.INVALID_CEP,
+  })
+  cep: string;
+
+  @IsNotEmpty()
   number: number;
 
   @IsNotEmpty()
-  neighbourhood: string;
+  neighborhood: string;
 
   @IsNotEmpty()
   city: string;

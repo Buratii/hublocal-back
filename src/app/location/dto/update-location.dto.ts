@@ -1,24 +1,29 @@
-import { IsNotEmpty } from 'class-validator';
+import { MessagesHelper } from '@helpers/messages.helper';
+import { RegExHelper } from '@helpers/regex.helper';
+import { IsNotEmpty, Matches } from 'class-validator';
 
 export class UpdateLocationDto {
   @IsNotEmpty()
-  name: string;
+  name?: string;
 
   @IsNotEmpty()
-  street: string;
+  street?: string;
 
   @IsNotEmpty()
-  number: number;
+  @Matches(RegExHelper.cep, {
+    message: MessagesHelper.INVALID_CEP,
+  })
+  cep?: string;
 
   @IsNotEmpty()
-  neighbourhood: string;
+  number?: number;
 
   @IsNotEmpty()
-  city: string;
+  neighborhood?: string;
 
   @IsNotEmpty()
-  state: string;
+  city?: string;
 
   @IsNotEmpty()
-  companyId: string;
+  state?: string;
 }
