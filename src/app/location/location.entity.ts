@@ -21,6 +21,9 @@ export class LocationEntity {
   @Column({ name: 'name', nullable: false })
   name: string;
 
+  @Column({ name: 'cep', nullable: false })
+  cep: string;
+
   @Column({ name: 'street', nullable: false })
   street: string;
 
