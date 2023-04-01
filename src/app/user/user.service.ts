@@ -32,6 +32,22 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async loggedUser(user: UserEntity) {
+    try {
+      const logged = await this.findOneOrFail({
+        where: {
+          email: user.email,
+        },
+      });
+      return {
+        name: logged.name,
+        email: logged.email,
+      };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async findOneOrFail(option: FindOneOptions<UserEntity>) {
     try {
       return await this.userRepository.findOneOrFail(option);

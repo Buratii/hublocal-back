@@ -1,3 +1,4 @@
+import { UserEntity } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   Controller,
@@ -14,10 +15,18 @@ import { SaveUserDto } from './dto/save-user.dto';
 import { UserService } from './user.service';
 import { ParseUUIDPipe } from '@nestjs/common/pipes';
 import { AuthGuard } from '@nestjs/passport';
+import { Get } from '@nestjs/common/decorators/http/request-mapping.decorator';
+import { GetUser } from 'src/decorators/getUser';
 
-@Controller('api/user')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('logged')
+  @UseGuards(AuthGuard('jwt'))
+  async getMyItems(@GetUser() user: UserEntity) {
+    return this.userService.loggedUser(user);
+  }
 
   @Post()
   async save(@Body() body: SaveUserDto) {

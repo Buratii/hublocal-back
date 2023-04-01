@@ -12,7 +12,7 @@ export class SaveUserDto {
 
   @IsNotEmpty()
   @Matches(RegExHelper.password, {
-    message: MessagesHelper.VALIDATE_PASSWORD,
+    message: MessagesHelper.INVALID_PASSWORD,
   })
   password: string;
 }
